@@ -19,14 +19,6 @@ var paths = {
             dest: 'README.md',
             src: 'bower_components/**/*.purs'
         }
-    },
-    test: 'test/**/*.purs'
-};
-
-var options = {
-    test: {
-        main: 'Test.Main',
-        output: 'output/test.js'
     }
 };
 
@@ -68,11 +60,6 @@ gulp.task('browser', function() {
 
 gulp.task('make', function() {
     return compile(purescript.pscMake, [paths.src].concat(paths.bowerSrc), {})
-});
-
-gulp.task('test', function() {
-    return compile(purescript.psc, [paths.src, paths.test].concat(paths.bowerSrc), options.test)
-        .pipe(run('node').exec());
 });
 
 gulp.task('docs', docs('Base'));
