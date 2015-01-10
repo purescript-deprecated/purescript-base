@@ -1,0 +1,32 @@
+{
+  "name": "purescript-base",
+  "license": "MIT",
+  "authors": [
+    "John A. De Goes <john@degoes.net> (http://degoes.net)"
+  ],
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "node_modules",
+    "output",
+    "tests",
+    "tmp",
+    "bower.json",
+    "Gruntfile.js",
+    "package.json"
+  ],
+  "dependencies": {
+    "purescript-enums":         "~0.3.0",
+    "purescript-transformers":  "~0.4.0",
+    "purescript-free":          "~0.2.0",
+    "purescript-arrays":        "~0.3.0",
+    "purescript-strings":       "~0.4.2",
+    "purescript-math":          "~0.1.0",
+    "purescript-lists":         "~0.5.0",
+    "purescript-lazy":          "~0.2.0",
+    "purescript-tuples":        "~0.2.3",
+    "purescript-either":        "~0.1.4",
+    "purescript-maybe":         "~0.2.1",
+    "purescript-foldable-traversable": "~0.2.1"
+  }
+}
