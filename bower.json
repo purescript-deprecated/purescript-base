@@ -31,7 +31,6 @@
     "purescript-math":          "~0.1.0",
     "purescript-maybe":         "~0.2.1",
     "purescript-monoid":        "~0.1.5",
-    "purescript-profunctors":   "~0.0.2",
     "purescript-strings":       "~0.4.2",
     "purescript-transformers":  "~0.4.0",
     "purescript-tuples":        "~0.2.3"

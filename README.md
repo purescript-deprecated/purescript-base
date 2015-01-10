@@ -288,6 +288,277 @@
     zipWith :: forall a b c. (a -> b -> c) -> [a] -> [b] -> [c]
 
 
+## Module Control.Biapplicative
+
+### Type Classes
+
+
+    class (Biapply w) <= Biapplicative w where
+
+      bipure :: forall a b. a -> b -> w a b
+
+
+### Type Class Instances
+
+
+    instance biapplicativeConst :: Biapplicative Const
+
+
+    instance biapplicativeTuple :: Biapplicative Tuple
+
+
+## Module Control.Biapply
+
+### Type Classes
+
+
+    class (Bifunctor w) <= Biapply w where
+
+      (<<*>>) :: forall a b c d. w (a -> b) (c -> d) -> w a c -> w b d
+
+
+### Type Class Instances
+
+
+    instance biapplyConst :: Biapply Const
+
+
+    instance biapplyTuple :: Biapply Tuple
+
+
+### Values
+
+
+    (*>>) :: forall w a b c d. (Biapply w) => w a b -> w c d -> w c d
+
+
+    (<<$>>) :: forall a b. (a -> b) -> a -> b
+
+
+    (<<*) :: forall w a b c d. (Biapply w) => w a b -> w c d -> w a b
+
+
+    bilift2 :: forall w a b c d e f. (Biapply w) => (a -> b -> c) -> (d -> e -> f) -> w a d -> w b e -> w c f
+
+
+    bilift3 :: forall w a b c d e f g h. (Biapply w) => (a -> b -> c -> d) -> (e -> f -> g -> h) -> w a e -> w b f -> w c g -> w d h
+
+
+## Module Control.Arrow
+
+### Type Classes
+
+
+    class (Category a) <= Arrow a where
+
+      arr :: forall b c. (b -> c) -> a b c
+
+      first :: forall b c d. a b c -> a (Tuple b d) (Tuple c d)
+
+
+    class ArrowPlus a where
+
+      (<+>) :: forall b c. a b c -> a b c -> a b c
+
+
+    class ArrowZero a where
+
+      azero :: forall b c. a b c
+
+
+### Type Class Instances
+
+
+    instance arrowFunction :: Arrow Prim.Function
+
+
+### Values
+
+
+    (&&&) :: forall a b b' c c'. (Arrow a) => a b c -> a b c' -> a b (Tuple c c')
+
+
+    (***) :: forall a b b' c c'. (Arrow a) => a b c -> a b' c' -> a (Tuple b b') (Tuple c c')
+
+
+    second :: forall a b c d. (Arrow a) => a b c -> a (Tuple d b) (Tuple d c)
+
+
+## Module Data.Bifoldable
+
+### Type Classes
+
+
+    class Bifoldable p where
+
+      bifoldr :: forall a b c. (a -> c -> c) -> (b -> c -> c) -> c -> p a b -> c
+
+      bifoldl :: forall a b c. (c -> a -> c) -> (c -> b -> c) -> c -> p a b -> c
+
+      bifoldMap :: forall m a b. (Monoid m) => (a -> m) -> (b -> m) -> p a b -> m
+
+
+### Type Class Instances
+
+
+    instance bifoldableConst :: Bifoldable Const
+
+
+    instance bifoldableEither :: Bifoldable Either
+
+
+    instance bifoldableTuple :: Bifoldable Tuple
+
+
+### Values
+
+
+    biall :: forall t a b. (Bifoldable t) => (a -> Boolean) -> (b -> Boolean) -> t a b -> Boolean
+
+
+    biany :: forall t a b. (Bifoldable t) => (a -> Boolean) -> (b -> Boolean) -> t a b -> Boolean
+
+
+    bifold :: forall t m. (Bifoldable t, Monoid m) => t m m -> m
+
+
+    bifor_ :: forall t f a b c d. (Bifoldable t, Applicative f) => t a b -> (a -> f c) -> (b -> f d) -> f Unit
+
+
+    bisequence_ :: forall t f a b. (Bifoldable t, Applicative f) => t (f a) (f b) -> f Unit
+
+
+    bitraverse_ :: forall t f a b c d. (Bifoldable t, Applicative f) => (a -> f c) -> (b -> f d) -> t a b -> f Unit
+
+
+## Module Data.Bifunctor
+
+### Type Classes
+
+
+    class Bifunctor f where
+
+      bimap :: forall a b c d. (a -> b) -> (c -> d) -> f a c -> f b d
+
+
+### Type Class Instances
+
+
+    instance bifunctorConst :: Bifunctor Const
+
+
+    instance bifunctorEither :: Bifunctor Either
+
+
+    instance bifunctorTuple :: Bifunctor Tuple
+
+
+### Values
+
+
+    lmap :: forall f a b c. (Bifunctor f) => (a -> b) -> f a c -> f b c
+
+
+    rmap :: forall f a b c. (Bifunctor f) => (b -> c) -> f a b -> f a c
+
+
+## Module Data.Bitraversable
+
+### Type Classes
+
+
+    class (Bifunctor t, Bifoldable t) <= Bitraversable t where
+
+      bitraverse :: forall f a b c d. (Applicative f) => (a -> f c) -> (b -> f d) -> t a b -> f (t c d)
+
+      bisequence :: forall f a b. (Applicative f) => t (f a) (f b) -> f (t a b)
+
+
+### Type Class Instances
+
+
+    instance bitraversableConst :: Bitraversable Const
+
+
+    instance bitraversableEither :: Bitraversable Either
+
+
+    instance bitraversableTuple :: Bitraversable Tuple
+
+
+### Values
+
+
+    bifor :: forall t f a b c d. (Bitraversable t, Applicative f) => t a b -> (a -> f c) -> (b -> f d) -> f (t c d)
+
+
+## Module Data.Const
+
+### Types
+
+
+    newtype Const a b where
+      Const :: a -> Const a b
+
+
+### Type Class Instances
+
+
+    instance applicativeConst :: (Monoid a) => Applicative (Const a)
+
+
+    instance applyConst :: (Semigroup a) => Apply (Const a)
+
+
+    instance bindConst :: (Semigroup a) => Bind (Const a)
+
+
+    instance contravariantConst :: Contravariant (Const a)
+
+
+    instance eqConst :: (Eq a) => Eq (Const a b)
+
+
+    instance foldableConst :: Foldable (Const a)
+
+
+    instance functorConst :: Functor (Const a)
+
+
+    instance monoidConst :: (Monoid a) => Monoid (Const a b)
+
+
+    instance ordConst :: (Ord a) => Ord (Const a b)
+
+
+    instance semigroupConst :: (Semigroup a) => Semigroup (Const a b)
+
+
+    instance semigroupoidConst :: Semigroupoid Const
+
+
+    instance showConst :: (Show a) => Show (Const a b)
+
+
+    instance traversableConst :: Traversable (Const a)
+
+
+### Values
+
+
+    getConst :: forall a b. Const a b -> a
+
+
+## Module Data.Contravariant
+
+### Type Classes
+
+
+    class Contravariant f where
+
+      (>$<) :: forall a b. (b -> a) -> f a -> f b
+
+
 ## Module Control.Alt
 
 ### Type Classes
@@ -473,6 +744,36 @@
     class (Alt f) <= Plus f where
 
       empty :: forall a. f a
+
+
+## Module Data.Distributive
+
+### Type Classes
+
+     Categorical dual of Traversable
+
+    class (Functor f) <= Distributive f where
+       Dual of sequence
+
+      distribute :: forall a g. (Functor g) => g (f a) -> f (g a)
+       Default implementation
+       distribute = collect id
+
+      collect :: forall a b g. (Functor g) => (a -> f b) -> g a -> f (g b)
+
+
+### Type Class Instances
+
+
+    instance distributiveIdentity :: Distributive Identity
+
+
+### Values
+
+     Default implementation
+     collect a2gb fa = distribute (a2gb <$> fa)
+
+    cotraverse :: forall a b f g. (Distributive f, Functor g) => (g a -> b) -> g (f a) -> f b
 
 
 ## Module Data.Either
@@ -1227,6 +1528,44 @@
     zipWith :: forall a b c. (a -> b -> c) -> List a -> List b -> List c
 
 
+## Module Test.Data.Argonaut
+
+### Type Class Instances
+
+
+    instance arbitraryJson :: Arbitrary Json
+
+
+### Values
+
+
+    genJArray :: Size -> Gen Json
+
+
+    genJBool :: Gen Json
+
+
+    genJNull :: Gen Json
+
+
+    genJNumber :: Gen Json
+
+
+    genJObject :: Size -> Gen Json
+
+
+    genJString :: Gen Json
+
+
+    genJson :: Size -> Gen Json
+
+
+    prop_decode_then_encode :: Json -> Boolean
+
+
+    prop_encode_then_decode :: Json -> Boolean
+
+
 ## Module Data.Maybe
 
 ### Types
@@ -1325,6 +1664,31 @@
     instance monoidUnit :: Monoid Unit
 
 
+## Module Data.Profunctor
+
+### Type Classes
+
+
+    class Profunctor p where
+
+      dimap :: forall a b c d. (a -> b) -> (c -> d) -> p b c -> p a d
+
+
+### Type Class Instances
+
+
+    instance profunctorArr :: Profunctor Prim.Function
+
+
+### Values
+
+
+    lmap :: forall a b c p. (Profunctor p) => (a -> b) -> p b c -> p a c
+
+
+    rmap :: forall a b c p. (Profunctor p) => (b -> c) -> p a b -> p a c
+
+
 ## Module Data.String
 
 ### Values
@@ -1403,6 +1767,295 @@
 
 
     uncons :: String -> Maybe { tail :: String, head :: Char }
+
+
+## Module Test.StrongCheck
+
+### Types
+
+
+    newtype AlphaNumString where
+      AlphaNumString :: String -> AlphaNumString
+
+
+    newtype ArbEnum a where
+      ArbEnum :: a -> ArbEnum a
+
+
+    newtype Negative where
+      Negative :: Number -> Negative
+
+
+    newtype NonZero where
+      NonZero :: Number -> NonZero
+
+
+    newtype Positive where
+      Positive :: Number -> Positive
+
+
+    type QC a = forall eff. Eff (err :: Exception, random :: Random, trace :: Trace | eff) a
+
+
+    data Result where
+      Success :: Result
+      Failed :: String -> Result
+
+
+    newtype Signum where
+      Signum :: Number -> Signum
+
+
+### Type Classes
+
+
+    class Arbitrary t where
+
+      arbitrary :: Gen t
+
+
+    class CoArbitrary t where
+
+      coarbitrary :: forall r. t -> Gen r -> Gen r
+
+
+    class Testable prop where
+
+      test :: prop -> Gen Result
+
+
+### Type Class Instances
+
+
+    instance arbAlphaNumString :: Arbitrary AlphaNumString
+
+
+    instance arbArbEnum :: (Enum a) => Arbitrary (ArbEnum a)
+
+
+    instance arbArray :: (Arbitrary a) => Arbitrary [a]
+
+
+    instance arbBoolean :: Arbitrary Boolean
+
+
+    instance arbChar :: Arbitrary Char
+
+
+    instance arbEither :: (Arbitrary a, Arbitrary b) => Arbitrary (Either a b)
+
+
+    instance arbFunction :: (CoArbitrary a, Arbitrary b) => Arbitrary (a -> b)
+
+
+    instance arbMaybe :: (Arbitrary a) => Arbitrary (Maybe a)
+
+
+    instance arbNegative :: Arbitrary Negative
+
+
+    instance arbNonZero :: Arbitrary NonZero
+
+
+    instance arbNumber :: Arbitrary Number
+
+
+    instance arbPositive :: Arbitrary Positive
+
+
+    instance arbSignum :: Arbitrary Signum
+
+
+    instance arbString :: Arbitrary String
+
+
+    instance arbTuple :: (Arbitrary a, Arbitrary b) => Arbitrary (Tuple a b)
+
+
+    instance coarbAlphaNumString :: CoArbitrary AlphaNumString
+
+
+    instance coarbArbEnum :: (Enum a) => CoArbitrary (ArbEnum a)
+
+
+    instance coarbArray :: (CoArbitrary a) => CoArbitrary [a]
+
+
+    instance coarbBoolean :: CoArbitrary Boolean
+
+
+    instance coarbChar :: CoArbitrary Char
+
+
+    instance coarbEither :: (CoArbitrary a, CoArbitrary b) => CoArbitrary (Either a b)
+
+
+    instance coarbFunction :: (Arbitrary a, CoArbitrary b) => CoArbitrary (a -> b)
+
+
+    instance coarbMaybe :: (CoArbitrary a) => CoArbitrary (Maybe a)
+
+
+    instance coarbNegative :: CoArbitrary Negative
+
+
+    instance coarbNonZero :: CoArbitrary NonZero
+
+
+    instance coarbNumber :: CoArbitrary Number
+
+
+    instance coarbPositive :: CoArbitrary Positive
+
+
+    instance coarbSignum :: CoArbitrary Signum
+
+
+    instance coarbString :: CoArbitrary String
+
+
+    instance coarbTuple :: (CoArbitrary a, CoArbitrary b) => CoArbitrary (Tuple a b)
+
+
+    instance enumArbEnum :: (Enum a) => Enum (ArbEnum a)
+
+
+    instance eqArbEnum :: (Eq a) => Eq (ArbEnum a)
+
+
+    instance eqResult :: Eq Result
+
+
+    instance monoidResult :: Monoid Result
+
+
+    instance ordArbEnum :: (Ord a) => Ord (ArbEnum a)
+
+
+    instance semigroupResult :: Semigroup Result
+
+
+    instance showArbEnum :: (Show a) => Show (ArbEnum a)
+
+
+    instance showResult :: Show Result
+
+
+    instance testableBoolean :: Testable Boolean
+
+
+    instance testableFunction :: (Arbitrary t, Testable prop) => Testable (t -> prop)
+
+
+    instance testableResult :: Testable Result
+
+
+### Values
+
+
+    (/==) :: forall a b. (Eq a, Show a) => a -> a -> Result
+
+
+    (<?>) :: Boolean -> String -> Result
+
+
+    (===) :: forall a b. (Eq a, Show a) => a -> a -> Result
+
+     | Checks that the specified proposition holds. Useful for unit tests.
+
+    assert :: forall prop. (Testable prop) => prop -> QC Unit
+
+     | Checks the proposition for 100 random values.
+
+    quickCheck :: forall prop. (Testable prop) => prop -> QC Unit
+
+
+    quickCheck' :: forall prop. (Testable prop) => Number -> prop -> QC Unit
+
+
+    quickCheckPure :: forall prop. (Testable prop) => Number -> Seed -> prop -> [Result]
+
+
+    runArbEnum :: forall a. ArbEnum a -> a
+
+     | Exhaustively checks the proposition for all possible values. Assumes the
+     | generator is a finite generator.
+
+    smallCheck :: forall prop. (Testable prop) => prop -> QC Unit
+
+
+    smallCheckPure :: forall prop. (Testable prop) => Number -> prop -> [Result]
+
+     | Checks that the proposition has a certain probability of being true for 
+     | arbitrary values.
+
+    statCheck :: forall prop. (Testable prop) => Number -> prop -> QC Unit
+
+
+    statCheckPure :: forall prop. (Testable prop) => Seed -> Number -> prop -> Result
+
+
+## Module Test.Main
+
+### Types
+
+     TODO: Remaining cases
+      , frequency 
+      , oneOf 
+      , perturbGen 
+      , repeatable 
+      , resize 
+      , sample 
+      , sample' 
+      , showSample
+      , showSample' 
+      , sized 
+      , stateful 
+      , suchThat
+      , suchThatMaybe
+      , unfoldGen
+      , uniform 
+      , variant 
+      , vectorOf 
+      
+
+    data DetABC where
+      DetABC :: String -> DetABC
+
+
+    data Mega where
+      Mega :: { chunked :: [[String]], combos :: [[String]], perms :: [[String]], infinite :: [String], extend :: [String], elements :: [String], takeGen :: [Number], dropGen :: [Number], allInRange :: [Number], allInArray :: [Number], collectAll :: [Number], chooseInt :: Number, choose :: Number, arrayOf1 :: [Number], arrayOf :: [Number] } -> Mega
+
+
+    data OneToTen where
+      OneToTen :: Number -> OneToTen
+
+
+### Type Class Instances
+
+
+    instance arbDetABC :: Arbitrary DetABC
+
+
+    instance arbMega :: Arbitrary Mega
+
+
+    instance arbOneToTen :: Arbitrary OneToTen
+
+
+### Values
+
+
+    between :: forall a. (Ord a) => a -> a -> a -> Boolean
+
+
+    runDetABC :: DetABC -> String
+
+
+    runOneToTen :: OneToTen -> Number
+
+
+    verify_gen :: Mega -> Result
 
 
 ## Module Data.Tuple
@@ -1581,6 +2234,262 @@
 
 
     tail :: forall a. [a] -> [a]
+
+
+## Module Control.Arrow.Kleisli
+
+### Types
+
+
+    newtype Kleisli m a b where
+      Kleisli :: (a -> m b) -> Kleisli m a b
+
+
+### Type Class Instances
+
+
+    instance arrowKleisli :: (Monad m) => Arrow (Kleisli m)
+
+
+    instance categoryKleisli :: (Monad m) => Category (Kleisli m)
+
+
+    instance semigroupoidKleisli :: (Monad m) => Semigroupoid (Kleisli m)
+
+
+### Values
+
+
+    runKleisli :: forall m a b. Kleisli m a b -> a -> m b
+
+
+## Module Data.Bifunctor.Clown
+
+### Types
+
+
+    data Clown f a b where
+      Clown :: f a -> Clown f a b
+
+
+### Type Class Instances
+
+
+    instance clownBiapplicative :: (Applicative f) => Biapplicative (Clown f)
+
+
+    instance clownBiapply :: (Apply f) => Biapply (Clown f)
+
+
+    instance clownBifoldable :: (Foldable f) => Bifoldable (Clown f)
+
+
+    instance clownBifunctor :: (Functor f) => Bifunctor (Clown f)
+
+
+    instance clownBitraversable :: (Traversable f) => Bitraversable (Clown f)
+
+
+    instance clownFoldable :: Foldable (Clown f a)
+
+
+    instance clownFunctor :: Functor (Clown f a)
+
+
+    instance clownTraversable :: Traversable (Clown f a)
+
+
+### Values
+
+
+    runClown :: forall f a b. Clown f a b -> f a
+
+
+## Module Data.Bifunctor.Flip
+
+### Types
+
+
+    data Flip p a b where
+      Flip :: p b a -> Flip p a b
+
+
+### Type Class Instances
+
+
+    instance flipBiapplicative :: (Biapplicative p) => Biapplicative (Flip p)
+
+
+    instance flipBiapply :: (Biapply p) => Biapply (Flip p)
+
+
+    instance flipBifoldable :: (Bifoldable p) => Bifoldable (Flip p)
+
+
+    instance flipBifunctor :: (Bifunctor p) => Bifunctor (Flip p)
+
+
+    instance flipBitraversable :: (Bitraversable p) => Bitraversable (Flip p)
+
+
+    instance flipFoldable :: (Bifoldable p) => Foldable (Flip p a)
+
+
+    instance flipFunctor :: (Bifunctor p) => Functor (Flip p a)
+
+
+    instance flipTraversable :: (Bitraversable p) => Traversable (Flip p a)
+
+
+### Values
+
+
+    runFlip :: forall p a b. Flip p a b -> p b a
+
+
+## Module Data.Bifunctor.Join
+
+### Types
+
+
+    data Join p a where
+      Join :: p a a -> Join p a
+
+
+### Type Class Instances
+
+
+    instance joinApplicative :: (Biapplicative p) => Applicative (Join p)
+
+
+    instance joinApply :: (Biapply p) => Apply (Join p)
+
+
+    instance joinFoldable :: (Bifoldable p) => Foldable (Join p)
+
+
+    instance joinFunctor :: (Bifunctor p) => Functor (Join p)
+
+
+    instance joinTraversable :: (Bitraversable p) => Traversable (Join p)
+
+
+### Values
+
+
+    runJoin :: forall p a. Join p a -> p a a
+
+
+## Module Data.Bifunctor.Joker
+
+### Types
+
+
+    data Joker g a b where
+      Joker :: g b -> Joker g a b
+
+
+### Type Class Instances
+
+
+    instance jokerBiapplicative :: (Applicative g) => Biapplicative (Joker g)
+
+
+    instance jokerBiapply :: (Apply g) => Biapply (Joker g)
+
+
+    instance jokerBifoldable :: (Foldable g) => Bifoldable (Joker g)
+
+
+    instance jokerBifunctor :: (Functor g) => Bifunctor (Joker g)
+
+
+    instance jokerBitraversable :: (Traversable g) => Bitraversable (Joker g)
+
+
+    instance jokerFoldable :: (Foldable g) => Foldable (Joker g a)
+
+
+    instance jokerFunctor :: (Functor g) => Functor (Joker g a)
+
+
+    instance jokerTraversable :: (Traversable g) => Traversable (Joker g a)
+
+
+### Values
+
+
+    runJoker :: forall g a b. Joker g a b -> g b
+
+
+## Module Data.Bifunctor.Product
+
+### Types
+
+
+    data Product f g a b where
+      Pair :: f a b -> g a b -> Product f g a b
+
+
+### Type Class Instances
+
+
+    instance productBiapplicative :: (Biapplicative f, Biapplicative g) => Biapplicative (Product f g)
+
+
+    instance productBiapply :: (Biapply f, Biapply g) => Biapply (Product f g)
+
+     todo: simplify bifoldr/bifoldl a little bit
+
+    instance productBifoldable :: (Bifoldable f, Bifoldable g) => Bifoldable (Product f g)
+
+
+    instance productBifunctor :: (Bifunctor f, Bifunctor g) => Bifunctor (Product f g)
+
+
+    instance productBitraversable :: (Bitraversable f, Bitraversable g) => Bitraversable (Product f g)
+
+
+## Module Data.Bifunctor.Wrap
+
+### Types
+
+
+    data Wrap p a b where
+      Wrap :: p a b -> Wrap p a b
+
+
+### Type Class Instances
+
+
+    instance wrapBiapplicative :: (Biapplicative p) => Biapplicative (Wrap p)
+
+
+    instance wrapBiapply :: (Biapply p) => Biapply (Wrap p)
+
+
+    instance wrapBifoldable :: (Bifoldable p) => Bifoldable (Wrap p)
+
+
+    instance wrapBifunctor :: (Bifunctor p) => Bifunctor (Wrap p)
+
+
+    instance wrapBitraversable :: (Bitraversable p) => Bitraversable (Wrap p)
+
+
+    instance wrapFoldable :: (Bifoldable p) => Foldable (Wrap p a)
+
+
+    instance wrapFunctor :: (Bifunctor p) => Functor (Wrap p a)
+
+
+    instance wrapTraversable :: (Bitraversable p) => Traversable (Wrap p a)
+
+
+### Values
+
+
+    unwrap :: forall p a b. Wrap p a b -> p a b
 
 
 ## Module Data.Functor.Coproduct
@@ -2035,6 +2944,141 @@
     tail :: forall a. List a -> List a
 
 
+## Module Data.Machine.Mealy
+
+### Types
+
+
+    data MealyT f s a where
+      MealyT :: f (s -> f (Step f s a)) -> MealyT f s a
+
+
+    type Sink f a = MealyT f a Unit
+
+
+    type Source f s = MealyT f Unit s
+
+
+    data Step f s a where
+      Emit :: a -> MealyT f s a -> Step f s a
+      Halt :: Step f s a
+
+
+### Type Class Instances
+
+
+    instance altMealy :: (Monad f) => Alt (MealyT f s)
+
+
+    instance alternativeMealy :: (Monad f) => Alternative (MealyT f s)
+
+
+    instance applicativeMealy :: (Monad f) => Applicative (MealyT f s)
+
+
+    instance applyMealy :: (Monad f) => Apply (MealyT f s)
+
+
+    instance arrowMealy :: (Monad f) => Arrow (MealyT f)
+
+
+    instance bindMealy :: (Monad f) => Bind (MealyT f s)
+
+
+    instance categoryMealy :: (Monad f) => Category (MealyT f)
+
+
+    instance functorMealy :: (Monad f) => Functor (MealyT f s)
+
+
+    instance monadMealy :: (Monad f) => Monad (MealyT f s)
+
+
+    instance monadPlus :: (Monad f) => MonadPlus (MealyT f s)
+
+
+    instance monoidMealy :: (Monad f) => Monoid (MealyT f s a)
+
+
+    instance plusMealy :: (Monad f) => Plus (MealyT f s)
+
+
+    instance profunctorMealy :: (Monad f) => Profunctor (MealyT f)
+
+
+    instance semigroupMealy :: (Monad f) => Semigroup (MealyT f s a)
+
+
+    instance semigroupoidMealy :: (Monad f) => Semigroupoid (MealyT f)
+
+
+### Values
+
+
+    (>>-) :: forall f s a b. (Monad f) => MealyT f s a -> (a -> MealyT f s b) -> MealyT f s b
+
+
+    collect :: forall f s a. (Monad f) => MealyT f s a -> MealyT f s [a]
+
+
+    drop :: forall f s a. (Monad f) => Number -> MealyT f s a -> MealyT f s a
+
+
+    fromArray :: forall f s a. (Monad f) => [a] -> MealyT f s a
+
+
+    fromMaybe :: forall f s a. (Monad f) => M.Maybe a -> MealyT f s a
+
+
+    halt :: forall f s a. (Applicative f) => MealyT f s a
+
+
+    ifte :: forall f s a b. (Monad f) => MealyT f s a -> (a -> MealyT f s b) -> MealyT f s b -> MealyT f s b
+
+
+    interleave :: forall f s a. (Monad f) => MealyT f s a -> MealyT f s a -> MealyT f s a
+
+
+    loop :: forall f s a. (Monad f) => MealyT f s a -> MealyT f s a
+
+
+    mealy :: forall f s a. (Applicative f) => (s -> f (Step f s a)) -> MealyT f s a
+
+     MonadLogic -- TODO: Create a purescript-logic package
+
+    msplit :: forall f s a. (Monad f) => MealyT f s a -> MealyT f s (M.Maybe (Tuple a (MealyT f s a)))
+
+
+    pureMealy :: forall f s a. (Applicative f) => (s -> Step f s a) -> MealyT f s a
+
+
+    runMealy :: forall f. (Monad f) => MealyT f Unit Unit -> f Unit
+
+
+    scanl :: forall f s a b. (Monad f) => (b -> a -> b) -> b -> MealyT f s a -> MealyT f s b
+
+
+    singleton :: forall f s a. (Monad f) => a -> MealyT f s a
+
+
+    sink :: forall f a. (Monad f) => (a -> f Unit) -> Sink f a
+
+
+    source :: forall f s. (Monad f) => f s -> Source f s
+
+
+    stepMealy :: forall f s a. (Monad f) => s -> MealyT f s a -> f (Step f s a)
+
+
+    take :: forall f s a. (Monad f) => Number -> MealyT f s a -> MealyT f s a
+
+
+    wrapEffect :: forall f s a. (Monad f) => f a -> MealyT f s a
+
+
+    zipWith :: forall f s a b c. (Monad f) => (a -> b -> c) -> MealyT f s a -> MealyT f s b -> MealyT f s c
+
+
 ## Module Data.Maybe.Unsafe
 
 ### Values
@@ -2292,6 +3336,42 @@
     runSum :: Sum -> Number
 
 
+## Module Data.Profunctor.Choice
+
+### Type Classes
+
+
+    class (Profunctor p) <= Choice p where
+
+      left :: forall a b c. p a b -> p (Either a c) (Either b c)
+
+      right :: forall a b c. p b c -> p (Either a b) (Either a c)
+
+
+### Type Class Instances
+
+
+    instance choiceArr :: Choice Prim.Function
+
+
+## Module Data.Profunctor.Strong
+
+### Type Classes
+
+
+    class (Profunctor p) <= Strong p where
+
+      first :: forall a b c. p a b -> p (Tuple a c) (Tuple b c)
+
+      second :: forall a b c. p b c -> p (Tuple a b) (Tuple a c)
+
+
+### Type Class Instances
+
+
+    instance strongArr :: Strong Prim.Function
+
+
 ## Module Data.Char
 
 ### Types
@@ -2386,6 +3466,493 @@
 
 
     charCodeAt :: Number -> String -> Number
+
+
+## Module Test.StrongCheck.Gen
+
+### Types
+
+
+    type Gen a = GenT Trampoline a
+
+
+    data GenOut a where
+      GenOut :: { value :: a, state :: GenState } -> GenOut a
+
+
+    data GenState where
+      GenState :: { size :: Size, seed :: Seed } -> GenState
+
+
+    data GenT f a where
+      GenT :: Mealy.MealyT f GenState (GenOut a) -> GenT f a
+
+
+    type Seed = Number
+
+
+    type Size = Number
+
+
+### Type Class Instances
+
+
+    instance altGenT :: (Monad f) => Alt (GenT f)
+
+
+    instance alternativeGenT :: (Monad f) => Alternative (GenT f)
+
+
+    instance applicativeGenT :: (Monad f) => Applicative (GenT f)
+
+
+    instance applyGenOut :: Apply GenOut
+
+
+    instance applyGenT :: (Monad f) => Apply (GenT f)
+
+
+    instance bindGenT :: (Monad f) => Bind (GenT f)
+
+
+    instance functorGenOut :: Functor GenOut
+
+     GenT instances
+
+    instance functorGenT :: (Monad f) => Functor (GenT f)
+
+
+    instance monadGenT :: (Monad f) => Monad (GenT f)
+
+
+    instance monadPlusGenT :: (Monad f) => MonadPlus (GenT f)
+
+
+    instance monoidGenOut :: (Monoid a) => Monoid (GenOut a)
+
+
+    instance monoidGenState :: Monoid GenState
+
+
+    instance monoidGenT :: (Monad f) => Monoid (GenT f a)
+
+
+    instance plusGenT :: (Monad f) => Plus (GenT f)
+
+
+    instance semigroupGenOut :: (Semigroup a) => Semigroup (GenOut a)
+
+
+    instance semigroupGenState :: Semigroup GenState
+
+
+    instance semigroupGenT :: (Monad f) => Semigroup (GenT f a)
+
+
+### Values
+
+     | A deterministic generator that produces values from the specified array,
+     | in sequence.
+
+    allInArray :: forall f a. (Monad f) => [a] -> GenT f a
+
+     | A deterministic generator that produces integers from the specified 
+     | inclusive range, in sequence.
+
+    allInRange :: forall f a. (Monad f) => Number -> Number -> GenT f Number
+
+     | Applies a state to a generator to possibly produce the next state,
+     | a value, and the next generator.
+
+    applyGen :: forall f a. (Monad f) => GenState -> GenT f a -> f (Maybe (GenOut (Tuple a (GenT f a))))
+
+     | Creates a generator of elements ranging from 0 to the maximum size.
+
+    arrayOf :: forall f a. (Monad f) => GenT f a -> GenT f [a]
+
+     | Creates a generator of elements ranging from 1 to the maximum size.
+
+    arrayOf1 :: forall f a. (Monad f) => GenT f a -> GenT f (Tuple a [a])
+
+     | A generator for characters.
+
+    charGen :: forall f. (Monad f) => GenT f Char
+
+     | Creates a generator that generates real numbers between the specified
+     | inclusive range.
+
+    choose :: forall f. (Monad f) => Number -> Number -> GenT f Number
+
+     | Creates a generator that generates integers between the specified 
+     | inclusive range.
+
+    chooseInt :: forall f. (Monad f) => Number -> Number -> GenT f Number
+
+     | Creates a generator that produces chunks of values in the specified size.
+     | Will extend the generator if necessary to produce a chunk of the specified
+     | size, but will not turn a finite generator into an infinite generator.
+
+    chunked :: forall f a. (Monad f) => Number -> GenT f a -> GenT f [a]
+
+     | Drains a finite generator of all values. Or blows up if you called it on 
+     | an infinite generator.
+
+    collectAll :: forall f a. (Monad f) => GenState -> GenT f a -> f [a]
+
+     | Drops a certain number of values from the generator. May produce
+     | an empty generator if called on a finite generator.
+
+    dropGen :: forall f a. (Monad f) => Number -> GenT f a -> GenT f a
+
+     | Creates a generator that chooses an element from among a set of elements.
+
+    elements :: forall f a. (Monad f) => a -> [a] -> GenT f a
+
+     | Extends a generator to produce *at least* the specified number of values.
+     | Will not turn a finite generator into an infinite one.
+
+    extend :: forall f a. (Monad f) => Number -> GenT f a -> GenT f a
+
+     | Folds over a generator to produce a value. Either the generator or the 
+     | user-defined function may halt the fold.
+
+    foldGen :: forall f a b. (Monad f) => (b -> a -> Maybe b) -> b -> GenState -> GenT f a -> f b
+
+     | Folds over a generator to produce a value. Either the generator or the 
+     | user-defined function may halt the fold. Returns not just the value
+     | created through folding, but also the successor generator.
+
+    foldGen' :: forall f a b. (Monad f) => (b -> a -> Maybe b) -> b -> GenState -> GenT f a -> f (Tuple b (GenT f a))
+
+     | Generates elements by the specified frequencies (which will be normalized).
+
+    frequency :: forall f a. (Monad f) => Tuple Number (GenT f a) -> [Tuple Number (GenT f a)] -> GenT f a
+
+     | Ensures that a given generator can produce an infinite number of values,
+     | assuming it can produce at least one.
+
+    infinite :: forall f a. (Monad f) => GenT f a -> GenT f a
+
+     | Fairly interleaves two generators.
+
+    interleave :: forall f a. (Monad f) => GenT f a -> GenT f a -> GenT f a
+
+     | A deterministic generator that produces all possible combinations of
+     | choosing exactly k elements from the specified array.
+
+    nChooseK :: forall f a. (Monad f) => Number -> [a] -> GenT f [a]
+
+     | Creates a generator that chooses another generator from the specified list
+     | at random, and then generates a value with that generator.
+
+    oneOf :: forall f a. (Monad f) => GenT f a -> [GenT f a] -> GenT f a
+
+     | A deterministic generator that produces all possible permutations of 
+     | the specified array.
+
+    perms :: forall f a. (Monad f) => [a] -> GenT f [a]
+
+
+    perturbGen :: forall f a. (Monad f) => Number -> GenT f a -> GenT f a
+
+     | Creates a function generator that will always generate the same output 
+     | for the same input.
+
+    repeatable :: forall a b. (a -> Gen b) -> Gen (a -> b)
+
+     | Resizes the generator so the size parameter passed into the generator 
+     | will be equal to the specified size.
+
+    resize :: forall f a. (Monad f) => Size -> GenT f a -> GenT f a
+
+     | Runs a generator to produce a specified number of values, returning both
+     | an array containing the values and the successor Gen that can be used to
+     | continue the generation process at a later time.
+
+    runGen :: forall f a. (Monad f) => Number -> GenState -> GenT f a -> f (Tuple [a] (GenT f a))
+
+     | Samples a generator, producing the specified number of values. Uses 
+     | default settings for the initial generator state.
+
+    sample :: forall f a. (Monad f) => Number -> GenT f a -> f [a]
+
+     | Samples a generator, producing the specified number of values.
+
+    sample' :: forall f a. (Monad f) => Number -> GenState -> GenT f a -> f [a]
+
+     | Shows a sample of values generated from the specified generator.
+
+    showSample :: forall r a. (Show a) => Gen a -> Eff (trace :: Trace | r) Unit
+
+     | Shows a sample of values generated from the specified generator.
+
+    showSample' :: forall r a. (Show a) => Number -> Gen a -> Eff (trace :: Trace | r) Unit
+
+     | Same as shuffle' but with default for the chunk size.
+
+    shuffle :: forall f a. (Monad f) => GenT f a -> GenT f a
+
+     | Creates a generator that mixes up the order of the specified generator.
+     | This is achieved by chunking the generator with the specified size 
+     | and then shuffling each chunk before continuing to the next.
+
+    shuffle' :: forall f a. (Monad f) => Number -> GenT f a -> GenT f a
+
+     | Creates a generator that produces shuffled versions of the provided array.
+
+    shuffleArray :: forall f a. (Monad f) => [a] -> GenT f [a]
+
+     | Creates a generator that depends on the size parameter.
+
+    sized :: forall f a. (Monad f) => (Size -> GenT f a) -> GenT f a
+
+     | Creates a generator that depends on access to the generator state.
+
+    stateful :: forall f a. (Monad f) => (GenState -> GenT f a) -> GenT f a
+
+     | Filters a generator to produce only values satisfying the specified 
+     | predicate.
+
+    suchThat :: forall f a. (Monad f) => GenT f a -> (a -> Boolean) -> GenT f a
+
+     | Filters a generator to produce only values satisfying the specified 
+     | predicate, but gives up and produces Nothing after the specified number
+     | of attempts.
+
+    suchThatMaybe :: forall f a. (Monad f) => Number -> GenT f a -> (a -> Boolean) -> GenT f (Maybe a)
+
+     | Takes the first number of values from the generator. Will turn an infinite
+     | generator into a finite generator.
+
+    takeGen :: forall f a. (Monad f) => Number -> GenT f a -> GenT f a
+
+     | Converts the generator into a function that, given the initial state, 
+     | returns a lazy list.
+
+    toLazyList :: forall a. Gen a -> GenState -> ListT.ListT Lazy a
+
+     | Transforms one gen into another, passing along user-supplied state.
+     | Either the generator being transformed or the transforming function may
+     | halt the transformation.
+
+    transGen :: forall f a b c. (Monad f) => (b -> a -> Tuple b (Maybe c)) -> b -> GenT f a -> GenT f c
+
+
+    unGen :: forall f a. GenT f a -> Mealy.MealyT f GenState (GenOut a)
+
+
+    unGenOut :: forall a. GenOut a -> { value :: a, state :: GenState }
+
+
+    unGenState :: GenState -> { size :: Size, seed :: Seed }
+
+
+    uniform :: forall f. (Monad f) => GenT f Seed
+
+
+    updateSeedState :: GenState -> GenState
+
+     | Fixes a generator on a certain variant, given by the specified seed.
+
+    variant :: forall f a. (Monad f) => Seed -> GenT f a -> GenT f a
+
+     | Creates a generator that generates arrays of some specified size.
+
+    vectorOf :: forall f a. (Monad f) => Number -> GenT f a -> GenT f [a]
+
+     | Wraps an effect in a generator that ignores the input state.
+
+    wrapEffect :: forall f a. (Monad f) => f a -> GenT f a
+
+
+## Module Test.StrongCheck.Landscape
+
+### Types
+
+
+    type Decay = Number -> Number
+
+
+    newtype DriverState a where
+      DriverState :: DriverStateRec a -> DriverState a
+
+
+    type DriverStateRec a = { state :: GenState, variance :: Number, value :: a }
+
+
+    newtype Landscape a where
+      Landscape :: Cofree L.List (DriverState a) -> Landscape a
+
+
+    type Variance = Number
+
+
+### Values
+
+
+    decayHalf :: Decay
+
+
+    decayThird :: Decay
+
+
+    defaultDecay :: Decay
+
+     | Creates a landscape whose initial points are randomly chosen across
+     | the entire landscape, using the default GenState and Decay.
+
+    everywhere :: forall a. (Perturb a) => Variance -> Gen a -> L.List (Landscape a)
+
+     | Creates a landscape whose initial points are randomly chosen across
+     | the entire landscape.
+
+    everywhere' :: forall a. (Perturb a) => GenState -> Decay -> Variance -> Gen a -> L.List (Landscape a)
+
+     | Moves to a location in a landscape that was previously sampled.
+
+    moveTo :: forall a. (Eq a, Perturb a) => a -> Landscape a -> Maybe (Landscape a)
+
+     | Creates a landscape that samples the area around a location, using the 
+     | default GenState and Decay.
+
+    nearby :: forall a. (Perturb a) => a -> Variance -> Landscape a
+
+     | Creates a landscape that samples the area around a location.
+
+    nearby' :: forall a. (Perturb a) => GenState -> Decay -> a -> Variance -> Landscape a
+
+     | Samples around the current location area, returning just the values.
+
+    sampleHere :: forall a. (Perturb a) => Number -> Landscape a -> [a]
+
+     | Samples around the current location area, returning full state information.
+
+    sampleHere' :: forall a. (Perturb a) => Number -> Landscape a -> [DriverState a]
+
+     | Picks somewhere and forms a landscape around that location, using the
+     | default GenState and Decay.
+
+    somewhere :: forall a. (Perturb a) => Variance -> Gen a -> Maybe (Landscape a)
+
+     | Picks somewhere and forms a landscape around that location.
+
+    somewhere' :: forall a. (Perturb a) => GenState -> Decay -> Variance -> Gen a -> Maybe (Landscape a)
+
+
+    unDriverState :: forall a. DriverState a -> DriverStateRec a
+
+
+    unLandscape :: forall a. Landscape a -> Cofree L.List (DriverState a)
+
+
+    whereAt :: forall a. Landscape a -> a
+
+
+## Module Test.StrongCheck.Perturb
+
+### Types
+
+
+    newtype Attempts where
+      Attempts :: Number -> Attempts
+
+
+    newtype Perturber a where
+      Perturber :: PerturberRec a -> Perturber a
+
+
+    type PerturberRec a = { dims :: a -> Number, dist :: a -> a -> Number, perturb :: Number -> a -> Gen a }
+
+
+### Type Classes
+
+     | The class for things which can be perturbed.
+     |
+     | Laws:  
+     |   forall a, 0 >= n <= 1:  
+     |   ((>=) n) <<< dist a <$> (perturb n a) must be an infinite generator of `true` values.
+
+    class Perturb a where
+
+      perturber :: Perturber a
+
+
+### Type Class Instances
+
+
+    instance perturbArbEnum :: (Enum a) => Perturb (ArbEnum a)
+
+
+    instance perturbArray :: (Perturb a) => Perturb [a]
+
+
+    instance perturbBoolean :: Perturb Boolean
+
+
+    instance perturbChar :: Perturb Char
+
+
+    instance perturbNumber :: Perturb Number
+
+
+    instance perturbString :: Perturb String
+
+
+### Values
+
+     | Combines two perturbers to produce a perturber of the product
+
+    (</\>) :: forall a b. Perturber a -> Perturber b -> Perturber (Tuple a b)
+
+     | Combines two perturbers to produce a perturber of the sum
+
+    (<\/>) :: forall a b. Perturber a -> Perturber b -> Perturber (Either a b)
+
+     | Creates a perturber for numbers that fall within the specified range.
+
+    bounded :: Number -> Number -> Perturber Number
+
+     | Creates a perturber for integers that fall within the specified range.
+
+    boundedInt :: Number -> Number -> Perturber Number
+
+
+    dims :: forall a. (Perturb a) => a -> Number
+
+
+    dist :: forall a. (Perturb a) => a -> a -> Number
+
+
+    enumerated :: forall a. (Eq a) => a -> [a] -> Perturber a
+
+     | Creates a perturber that perturbs nothing.
+
+    nonPerturber :: forall a. Perturber a
+
+
+    perturb :: forall a. (Perturb a) => Number -> a -> Gen a
+
+     | The same as search', but uses defaults for attempt count and sample size.
+     | Will search a total of 10,000 examples before giving up.
+
+    searchIn :: forall a. (Perturb a) => (a -> Boolean) -> a -> Gen a
+
+     | Given one example, searches for other examples that satisfy a provided
+     | boolean predicate.
+     | 
+     | The search operates out-to-in, in an attempt to find examples that are 
+     | as far removed from the provided example as possible. The sampling size
+     | parameter determines how many samples to take at every level of 
+     | searching, while the attempts parameter determines how many levels.
+
+    searchIn' :: forall a. (Perturb a) => Attempts -> Number -> (a -> Boolean) -> a -> Gen a
+
+
+    unPerturber :: forall a. Perturber a -> PerturberRec a
+
+     TODO: Move to Data.Functor.Invariant
+
+    xmap :: forall a b. (a -> b) -> (b -> a) -> Perturber a -> Perturber b
 
 
 ## Module Control.Comonad.Env
@@ -2623,6 +4190,41 @@
     runWriter :: forall w a. Writer w a -> Tuple a w
 
 
+## Module Control.Monad.Eff.Exception
+
+### Types
+
+
+    data Error :: *
+
+
+    data Exception :: !
+
+
+### Type Class Instances
+
+
+    instance showError :: Show Error
+
+
+### Values
+
+
+    catchException :: forall a eff. (Error -> Eff eff a) -> Eff (err :: Exception | eff) a -> Eff eff a
+
+
+    error :: String -> Error
+
+
+    message :: Error -> String
+
+
+    showErrorImpl :: Error -> String
+
+
+    throwException :: forall a eff. Error -> Eff (err :: Exception | eff) a
+
+
 ## Module Data.List.Lazy
 
 ### Types
@@ -2645,6 +4247,20 @@
 
 
     unLazyList :: forall a. LazyList a -> List a
+
+
+## Module Control.Monad.Eff.Random
+
+### Types
+
+
+    data Random :: !
+
+
+### Values
+
+
+    random :: forall e. Eff (random :: Random | e) Number
 
 
 ## Module Control.Comonad.Env.Class
