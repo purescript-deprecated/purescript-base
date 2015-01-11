@@ -288,6 +288,103 @@
     zipWith :: forall a b c. (a -> b -> c) -> [a] -> [b] -> [c]
 
 
+## Module Control.Arrow
+
+### Type Classes
+
+
+    class (Category a) <= Arrow a where
+
+      arr :: forall b c. (b -> c) -> a b c
+
+      first :: forall b c d. a b c -> a (Tuple b d) (Tuple c d)
+
+
+    class ArrowPlus a where
+
+      (<+>) :: forall b c. a b c -> a b c -> a b c
+
+
+    class ArrowZero a where
+
+      azero :: forall b c. a b c
+
+
+### Type Class Instances
+
+
+    instance arrowFunction :: Arrow Prim.Function
+
+
+### Values
+
+
+    (&&&) :: forall a b b' c c'. (Arrow a) => a b c -> a b c' -> a b (Tuple c c')
+
+
+    (***) :: forall a b b' c c'. (Arrow a) => a b c -> a b' c' -> a (Tuple b b') (Tuple c c')
+
+
+    second :: forall a b c d. (Arrow a) => a b c -> a (Tuple d b) (Tuple d c)
+
+
+## Module Data.Const
+
+### Types
+
+
+    newtype Const a b where
+      Const :: a -> Const a b
+
+
+### Type Class Instances
+
+
+    instance applicativeConst :: (Monoid a) => Applicative (Const a)
+
+
+    instance applyConst :: (Semigroup a) => Apply (Const a)
+
+
+    instance bindConst :: (Semigroup a) => Bind (Const a)
+
+
+    instance contravariantConst :: Contravariant (Const a)
+
+
+    instance eqConst :: (Eq a) => Eq (Const a b)
+
+
+    instance foldableConst :: Foldable (Const a)
+
+
+    instance functorConst :: Functor (Const a)
+
+
+    instance monoidConst :: (Monoid a) => Monoid (Const a b)
+
+
+    instance ordConst :: (Ord a) => Ord (Const a b)
+
+
+    instance semigroupConst :: (Semigroup a) => Semigroup (Const a b)
+
+
+    instance semigroupoidConst :: Semigroupoid Const
+
+
+    instance showConst :: (Show a) => Show (Const a b)
+
+
+    instance traversableConst :: Traversable (Const a)
+
+
+### Values
+
+
+    getConst :: forall a b. Const a b -> a
+
+
 ## Module Control.Biapplicative
 
 ### Type Classes
@@ -342,46 +439,6 @@
 
 
     bilift3 :: forall w a b c d e f g h. (Biapply w) => (a -> b -> c -> d) -> (e -> f -> g -> h) -> w a e -> w b f -> w c g -> w d h
-
-
-## Module Control.Arrow
-
-### Type Classes
-
-
-    class (Category a) <= Arrow a where
-
-      arr :: forall b c. (b -> c) -> a b c
-
-      first :: forall b c d. a b c -> a (Tuple b d) (Tuple c d)
-
-
-    class ArrowPlus a where
-
-      (<+>) :: forall b c. a b c -> a b c -> a b c
-
-
-    class ArrowZero a where
-
-      azero :: forall b c. a b c
-
-
-### Type Class Instances
-
-
-    instance arrowFunction :: Arrow Prim.Function
-
-
-### Values
-
-
-    (&&&) :: forall a b b' c c'. (Arrow a) => a b c -> a b c' -> a b (Tuple c c')
-
-
-    (***) :: forall a b b' c c'. (Arrow a) => a b c -> a b' c' -> a (Tuple b b') (Tuple c c')
-
-
-    second :: forall a b c d. (Arrow a) => a b c -> a (Tuple d b) (Tuple d c)
 
 
 ## Module Data.Bifoldable
@@ -490,63 +547,6 @@
 
 
     bifor :: forall t f a b c d. (Bitraversable t, Applicative f) => t a b -> (a -> f c) -> (b -> f d) -> f (t c d)
-
-
-## Module Data.Const
-
-### Types
-
-
-    newtype Const a b where
-      Const :: a -> Const a b
-
-
-### Type Class Instances
-
-
-    instance applicativeConst :: (Monoid a) => Applicative (Const a)
-
-
-    instance applyConst :: (Semigroup a) => Apply (Const a)
-
-
-    instance bindConst :: (Semigroup a) => Bind (Const a)
-
-
-    instance contravariantConst :: Contravariant (Const a)
-
-
-    instance eqConst :: (Eq a) => Eq (Const a b)
-
-
-    instance foldableConst :: Foldable (Const a)
-
-
-    instance functorConst :: Functor (Const a)
-
-
-    instance monoidConst :: (Monoid a) => Monoid (Const a b)
-
-
-    instance ordConst :: (Ord a) => Ord (Const a b)
-
-
-    instance semigroupConst :: (Semigroup a) => Semigroup (Const a b)
-
-
-    instance semigroupoidConst :: Semigroupoid Const
-
-
-    instance showConst :: (Show a) => Show (Const a b)
-
-
-    instance traversableConst :: Traversable (Const a)
-
-
-### Values
-
-
-    getConst :: forall a b. Const a b -> a
 
 
 ## Module Data.Contravariant
@@ -2927,23 +2927,6 @@
     zipWith' :: forall f a b c. (Monad f) => (a -> b -> f c) -> ListT f a -> ListT f b -> ListT f c
 
 
-## Module Data.List.Unsafe
-
-### Values
-
-
-    head :: forall a. List a -> a
-
-
-    init :: forall a. List a -> List a
-
-
-    last :: forall a. List a -> a
-
-
-    tail :: forall a. List a -> List a
-
-
 ## Module Data.Machine.Mealy
 
 ### Types
@@ -3077,6 +3060,23 @@
 
 
     zipWith :: forall f s a b c. (Monad f) => (a -> b -> c) -> MealyT f s a -> MealyT f s b -> MealyT f s c
+
+
+## Module Data.List.Unsafe
+
+### Values
+
+
+    head :: forall a. List a -> a
+
+
+    init :: forall a. List a -> List a
+
+
+    last :: forall a. List a -> a
+
+
+    tail :: forall a. List a -> List a
 
 
 ## Module Data.Maybe.Unsafe
@@ -4326,6 +4326,67 @@
     withEnvT :: forall e1 e2 w a. (e1 -> e2) -> EnvT e1 w a -> EnvT e2 w a
 
 
+## Module Control.Comonad.Traced.Class
+
+### Type Classes
+
+
+    class (Comonad w) <= ComonadTraced t w where
+
+      track :: forall a. t -> w a -> a
+
+
+### Type Class Instances
+
+
+    instance comonadTracedTracedT :: (Comonad w, Monoid t) => ComonadTraced t (TracedT t w)
+
+
+### Values
+
+
+    censor :: forall w a t b. (Functor w) => (t -> t) -> TracedT t w a -> TracedT t w a
+
+
+    listen :: forall w a t. (Functor w) => TracedT t w a -> TracedT t w (Tuple a t)
+
+
+    listens :: forall w a t b. (Functor w) => (t -> b) -> TracedT t w a -> TracedT t w (Tuple a b)
+
+
+    tracks :: forall w a t. (Comonad w, ComonadTraced t w) => (a -> t) -> w a -> a
+
+
+## Module Control.Comonad.Traced.Trans
+
+### Types
+
+
+    newtype TracedT t w a where
+      TracedT :: w (t -> a) -> TracedT t w a
+
+
+### Type Class Instances
+
+
+    instance comonadTracedT :: (Comonad w, Monoid t) => Comonad (TracedT t w)
+
+
+    instance comonadTransTracedT :: (Monoid t) => ComonadTrans (TracedT t)
+
+
+    instance extendTracedT :: (Extend w, Semigroup t) => Extend (TracedT t w)
+
+
+    instance functorTracedT :: (Functor w) => Functor (TracedT t w)
+
+
+### Values
+
+
+    runTracedT :: forall w a t. TracedT t w a -> w (t -> a)
+
+
 ## Module Control.Comonad.Store.Class
 
 ### Type Classes
@@ -4387,67 +4448,6 @@
 
 
     runStoreT :: forall s w a. StoreT s w a -> Tuple (w (s -> a)) s
-
-
-## Module Control.Comonad.Traced.Class
-
-### Type Classes
-
-
-    class (Comonad w) <= ComonadTraced t w where
-
-      track :: forall a. t -> w a -> a
-
-
-### Type Class Instances
-
-
-    instance comonadTracedTracedT :: (Comonad w, Monoid t) => ComonadTraced t (TracedT t w)
-
-
-### Values
-
-
-    censor :: forall w a t b. (Functor w) => (t -> t) -> TracedT t w a -> TracedT t w a
-
-
-    listen :: forall w a t. (Functor w) => TracedT t w a -> TracedT t w (Tuple a t)
-
-
-    listens :: forall w a t b. (Functor w) => (t -> b) -> TracedT t w a -> TracedT t w (Tuple a b)
-
-
-    tracks :: forall w a t. (Comonad w, ComonadTraced t w) => (a -> t) -> w a -> a
-
-
-## Module Control.Comonad.Traced.Trans
-
-### Types
-
-
-    newtype TracedT t w a where
-      TracedT :: w (t -> a) -> TracedT t w a
-
-
-### Type Class Instances
-
-
-    instance comonadTracedT :: (Comonad w, Monoid t) => Comonad (TracedT t w)
-
-
-    instance comonadTransTracedT :: (Monoid t) => ComonadTrans (TracedT t)
-
-
-    instance extendTracedT :: (Extend w, Semigroup t) => Extend (TracedT t w)
-
-
-    instance functorTracedT :: (Functor w) => Functor (TracedT t w)
-
-
-### Values
-
-
-    runTracedT :: forall w a t. TracedT t w a -> w (t -> a)
 
 
 ## Module Control.Monad.Cont.Class
@@ -4670,80 +4670,6 @@
     runMaybeT :: forall m a. MaybeT m a -> m (Maybe a)
 
 
-## Module Control.Monad.RWS.Class
-
-### Type Classes
-
-
-    class (Monad m, Monoid w, MonadReader r m, MonadWriter w m, MonadState s m) <= MonadRWS r w s m where
-
-
-### Type Class Instances
-
-
-    instance monadRWSErrorT :: (Monad m, Monoid w, MonadRWS r w s m, MonadReader r m, MonadWriter w m, MonadState s m, Error e) => MonadRWS r w s (ErrorT e m)
-
-
-    instance monadRWSMaybeT :: (Monad m, Monoid w, MonadRWS r w s m, MonadReader r m, MonadWriter w m, MonadState s m) => MonadRWS r w s (MaybeT m)
-
-
-    instance monadRWSRWST :: (Monad m, Monoid w) => MonadRWS r w s (RWST r w s m)
-
-
-## Module Control.Monad.RWS.Trans
-
-### Types
-
-
-    newtype RWST r w s m a where
-      RWST :: (r -> s -> m (See s a w)) -> RWST r w s m a
-
-
-    type See s a w = { log :: w, result :: a, state :: s }
-
-
-### Type Class Instances
-
-
-    instance applicativeRWST :: (Applicative m, Monoid w) => Applicative (RWST r w s m)
-
-
-    instance applyRWST :: (Apply m, Semigroup w) => Apply (RWST r w s m)
-
-
-    instance bindRWST :: (Bind m, Semigroup w) => Bind (RWST r w s m)
-
-
-    instance functorRWST :: (Functor m) => Functor (RWST r w s m)
-
-
-    instance monadRWST :: (Monad m, Monoid w) => Monad (RWST r w s m)
-
-
-    instance monadTransRWST :: (Monoid w) => MonadTrans (RWST r w s)
-
-
-### Values
-
-
-    evalRWST :: forall r w s m a. (Monad m) => RWST r w s m a -> r -> s -> m (Tuple a w)
-
-
-    execRWST :: forall r w s m a. (Monad m) => RWST r w s m a -> r -> s -> m (Tuple s w)
-
-
-    mapRWST :: forall r w1 w2 s m1 m2 a1 a2. (m1 (See s a1 w1) -> m2 (See s a2 w2)) -> RWST r w1 s m1 a1 -> RWST r w2 s m2 a2
-
-
-    mkSee :: forall s a w. (Monoid w) => s -> a -> w -> See s a w
-
-
-    runRWST :: forall r w s m a. RWST r w s m a -> r -> s -> m (See s a w)
-
-
-    withRWST :: forall r1 r2 w s m a. (r2 -> s -> Tuple r1 s) -> RWST r1 w s m a -> RWST r2 w s m a
-
-
 ## Module Control.Monad.Reader.Class
 
 ### Type Classes
@@ -4847,6 +4773,80 @@
 
 
     withReaderT :: forall r1 r2 m a b. (r2 -> r1) -> ReaderT r1 m a -> ReaderT r2 m a
+
+
+## Module Control.Monad.RWS.Class
+
+### Type Classes
+
+
+    class (Monad m, Monoid w, MonadReader r m, MonadWriter w m, MonadState s m) <= MonadRWS r w s m where
+
+
+### Type Class Instances
+
+
+    instance monadRWSErrorT :: (Monad m, Monoid w, MonadRWS r w s m, MonadReader r m, MonadWriter w m, MonadState s m, Error e) => MonadRWS r w s (ErrorT e m)
+
+
+    instance monadRWSMaybeT :: (Monad m, Monoid w, MonadRWS r w s m, MonadReader r m, MonadWriter w m, MonadState s m) => MonadRWS r w s (MaybeT m)
+
+
+    instance monadRWSRWST :: (Monad m, Monoid w) => MonadRWS r w s (RWST r w s m)
+
+
+## Module Control.Monad.RWS.Trans
+
+### Types
+
+
+    newtype RWST r w s m a where
+      RWST :: (r -> s -> m (See s a w)) -> RWST r w s m a
+
+
+    type See s a w = { log :: w, result :: a, state :: s }
+
+
+### Type Class Instances
+
+
+    instance applicativeRWST :: (Applicative m, Monoid w) => Applicative (RWST r w s m)
+
+
+    instance applyRWST :: (Apply m, Semigroup w) => Apply (RWST r w s m)
+
+
+    instance bindRWST :: (Bind m, Semigroup w) => Bind (RWST r w s m)
+
+
+    instance functorRWST :: (Functor m) => Functor (RWST r w s m)
+
+
+    instance monadRWST :: (Monad m, Monoid w) => Monad (RWST r w s m)
+
+
+    instance monadTransRWST :: (Monoid w) => MonadTrans (RWST r w s)
+
+
+### Values
+
+
+    evalRWST :: forall r w s m a. (Monad m) => RWST r w s m a -> r -> s -> m (Tuple a w)
+
+
+    execRWST :: forall r w s m a. (Monad m) => RWST r w s m a -> r -> s -> m (Tuple s w)
+
+
+    mapRWST :: forall r w1 w2 s m1 m2 a1 a2. (m1 (See s a1 w1) -> m2 (See s a2 w2)) -> RWST r w1 s m1 a1 -> RWST r w2 s m2 a2
+
+
+    mkSee :: forall s a w. (Monoid w) => s -> a -> w -> See s a w
+
+
+    runRWST :: forall r w s m a. RWST r w s m a -> r -> s -> m (See s a w)
+
+
+    withRWST :: forall r1 r2 w s m a. (r2 -> s -> Tuple r1 s) -> RWST r1 w s m a -> RWST r2 w s m a
 
 
 ## Module Control.Monad.State.Class
