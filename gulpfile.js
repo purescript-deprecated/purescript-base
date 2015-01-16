@@ -16,7 +16,7 @@ var paths = {
     dest: '',
     docs: {
         'Base': {
-            dest: 'README.md',
+            dest: 'MODULES.md',
             src: 'bower_components/**/*.purs'
         }
     }
