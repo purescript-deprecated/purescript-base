@@ -5,71 +5,61 @@ var gulp        = require('gulp')
   , run         = require('gulp-run')
   , runSequence = require('run-sequence')
   , jsValidate  = require('gulp-jsvalidate')
+  , glob        = require('glob')
   ;
 
-var paths = {
-    src: 'src/**/*.purs',
-    bowerSrc: [
-      'bower_components/purescript-*/src/**/*.purs',
-      'bower_components/purescript-*/src/**/*.purs.hs'
-    ],
-    dest: '',
-    docs: {
-        'Base': {
-            dest: 'MODULES.md',
-            src: 'bower_components/**/*.purs'
-        }
-    }
-};
 
-function compile (compiler, src, opts) {
-    var psc = compiler(opts);
-    psc.on('error', function(e) {
-        console.error(e.message);
-        psc.end();
-    });
-    return gulp.src(src.concat(paths.bowerSrc))
-        .pipe(psc)
-        .pipe(gulp.dest(paths.dest))
-        .pipe(jsValidate());
-};
-
-function docs (target) {
-    return function() {
-        var docgen = purescript.pscDocs();
-        docgen.on('error', function(e) {
-            console.error(e.message);
-            docgen.end();
-        });
-        return gulp.src(paths.docs[target].src)
-            .pipe(docgen)
-            .pipe(gulp.dest(paths.docs[target].dest));
-    }
-}
 
 function sequence () {
     var args = [].slice.apply(arguments);
     return function() {
         runSequence.apply(null, args);
-    }
+    };
 }
 
-gulp.task('browser', function() {
-    return compile(purescript.psc, [paths.src].concat(paths.bowerSrc), {})
+var sources = [
+    'src/**/*.purs',
+    'bower_components/purescript-*/src/**/*.purs'
+];
+var foreigns = [
+    'bower_components/purescript-*/src/**/*.js'
+];
+
+function sourcePathsToDocgenEntries(paths) {
+  var entries = {};
+
+  var prefixRegexp = /^(src\/)|bower_components\/purescript-.+?\/(src\/)?/;
+  for (var purs of paths) {
+    var docPath = purs
+      .replace(prefixRegexp, "docs/")
+      .replace(".purs", ".md");
+    var moduleName = purs
+      .replace(prefixRegexp, "")
+      .replace(/\//g, ".")
+      .replace(".purs", "");
+
+    entries[moduleName] = docPath;
+  }
+
+  return entries;
+}
+
+gulp.task('docs', function() {
+    glob(sources[0], {}, function (er, localPurs) {
+        glob(sources[1], {}, function (er, bowerPurs) {
+            return purescript.pscDocs({
+                src: sources,
+                docgen: sourcePathsToDocgenEntries(localPurs.concat(bowerPurs))
+            });
+        });
+    });
 });
 
 gulp.task('make', function() {
-    return compile(purescript.pscMake, [paths.src].concat(paths.bowerSrc), {})
-});
-
-gulp.task('docs', docs('Base'));
-
-gulp.task('watch-browser', function() {
-    gulp.watch(paths.src, sequence('browser', 'docs'));
-});
-
-gulp.task('watch-make', function() {
-    gulp.watch(paths.src, sequence('make', 'docs'));
+    return purescript.psc({
+        src: sources,
+        ffi: foreigns
+    });
 });
 
 gulp.task('default', sequence('make', 'docs'));

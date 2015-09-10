@@ -634,7 +634,7 @@ multiplication, division, and modulo (division remainder) operations.
 Instances must satisfy the following law in addition to the `Semiring`
 laws:
 
-- Remainder: `a / b * b + (a `mod` b) = a`
+- Remainder: ``a / b * b + (a `mod` b) = a``
 
 ##### Instances
 ``` purescript
@@ -756,7 +756,7 @@ comparing two values:
 
 `LT` - The first value is _less than_ the second.
 `GT` - The first value is _greater than_ the second.
-`EQ` - The first value is _equal to_ or _incomparable to_ the second.
+`EQ` - The first value is _equal to_ the second.
 
 ##### Instances
 ``` purescript
@@ -775,9 +775,10 @@ class (Eq a) <= Ord a where
   compare :: a -> a -> Ordering
 ```
 
-The `Ord` type class represents types which support comparisons.
+The `Ord` type class represents types which support comparisons with a
+_total order_.
 
-`Ord` instances should satisfy the laws of _partially orderings_:
+`Ord` instances should satisfy the laws of total orderings:
 
 - Reflexivity: `a <= a`
 - Antisymmetry: if `a <= b` and `b <= a` then `a = b`
@@ -835,6 +836,12 @@ _left-associative / precedence 4_
 
 Test whether one value is _non-strictly greater than_ another.
 
+#### `unsafeCompare`
+
+``` purescript
+unsafeCompare :: forall a. a -> a -> Ordering
+```
+
 #### `Bounded`
 
 ``` purescript
@@ -859,6 +866,7 @@ instance boundedBoolean :: Bounded Boolean
 instance boundedUnit :: Bounded Unit
 instance boundedOrdering :: Bounded Ordering
 instance boundedInt :: Bounded Int
+instance boundedChar :: Bounded Char
 instance boundedFn :: (Bounded b) => Bounded (a -> b)
 ```
 
@@ -880,6 +888,7 @@ instance boundedOrdBoolean :: BoundedOrd Boolean
 instance boundedOrdUnit :: BoundedOrd Unit
 instance boundedOrdOrdering :: BoundedOrd Ordering
 instance boundedOrdInt :: BoundedOrd Int
+instance boundedOrdChar :: BoundedOrd Char
 ```
 
 #### `BooleanAlgebra`

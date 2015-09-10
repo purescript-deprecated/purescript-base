@@ -10,4 +10,10 @@ A partial function that extracts the value from the `Just` data
 constructor. Passing `Nothing` to `fromJust` will throw an error at
 runtime.
 
+#### `unsafeThrow`
+
+``` purescript
+unsafeThrow :: forall a. String -> a
+```
+
 
