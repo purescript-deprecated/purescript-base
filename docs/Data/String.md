@@ -78,6 +78,28 @@ dropWhile :: (Char -> Boolean) -> String -> String
 
 Returns the suffix remaining after `takeWhile`.
 
+#### `stripPrefix`
+
+``` purescript
+stripPrefix :: String -> String -> Maybe String
+```
+
+If the string starts with the given prefix, return the portion of the
+string left after removing it, as a Just value. Otherwise, return Nothing.
+* `stripPrefix "http:" "http://purescript.org" == Just "//purescript.org"`
+* `stripPrefix "http:" "https://purescript.org" == Nothing`
+
+#### `stripSuffix`
+
+``` purescript
+stripSuffix :: String -> String -> Maybe String
+```
+
+If the string ends with the given suffix, return the portion of the
+string left after removing it, as a Just value. Otherwise, return Nothing.
+* `stripSuffix ".exe" "psc.exe" == Just "psc"`
+* `stripSuffix ".exe" "psc" == Nothing`
+
 #### `fromCharArray`
 
 ``` purescript
@@ -120,7 +142,7 @@ lastIndexOf :: String -> String -> Maybe Int
 ```
 
 Returns the index of the last occurrence of the first string in the
-second string. Returns `-1` if there is no match.
+second string. Returns `Nothing` if there is no match.
 
 #### `lastIndexOf'`
 
@@ -178,7 +200,8 @@ Returns the string without the first `n` characters.
 count :: (Char -> Boolean) -> String -> Int
 ```
 
-Returns the number of characters in the string for which the predicate holds.
+Returns the number of contiguous characters at the beginning
+of the string for which the predicate holds.
 
 #### `split`
 
@@ -186,8 +209,9 @@ Returns the number of characters in the string for which the predicate holds.
 split :: String -> String -> Array String
 ```
 
-Returns the substrings of the first string separated along occurences
-of the second string.
+Returns the substrings of the second string separated along occurences
+of the first string.
+* `split " " "hello world" == ["hello", "world"]`
 
 #### `toCharArray`
 
