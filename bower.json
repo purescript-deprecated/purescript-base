@@ -2,7 +2,8 @@
   "name": "purescript-base",
   "license": "MIT",
   "authors": [
-    "John A. De Goes <john@degoes.net> (http://degoes.net)"
+    "John A. De Goes <john@degoes.net> (http://degoes.net)",
+    "Jon Sterling <jon@jonmsterling.com> (http://jonmsterling.com)"
   ],
   "ignore": [
     "**/.*",

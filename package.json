@@ -3,7 +3,8 @@
   "license":    "MIT",
   "repository": "git@github.com:purescript-contrib/purescript-base.git",
   "contributors": [
-    "John A. De Goes <john@degoes.net> (http://degoes.net)"
+    "John A. De Goes <john@degoes.net> (http://degoes.net)",
+    "Jon Sterling <jon@jonmsterling.com> (http://jonmsterling.com)"
   ],
   "scripts": {
     "build": "npm install && gulp"
