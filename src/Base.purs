@@ -8,14 +8,14 @@ module Base
   , module Data.Foldable
   , module Data.Traversable
   , module Data.List
-  
+
   , module Control.Apply
   , module Control.Bind
   , module Control.Monad
   , module Control.MonadPlus
   , module Control.Alt
   , module Control.Plus
-  
+
   , module Control.Monad.Eff
   , module Control.Monad.Eff.Console
   ) where
@@ -28,7 +28,7 @@ import Data.Monoid
 import Data.Unfoldable
 import Data.Foldable
 import Data.Traversable
-import Data.List
+import Data.List hiding (singleton, replicate)
 
 import Control.Apply
 import Control.Bind
