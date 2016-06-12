@@ -1,21 +1,12 @@
 {
-  "name":       "purescript-base",
-  "license":    "MIT",
-  "repository": "git@github.com:purescript-contrib/purescript-base.git",
-  "contributors": [
-    "John A. De Goes <john@degoes.net> (http://degoes.net)",
-    "Jon Sterling <jon@jonmsterling.com> (http://jonmsterling.com)"
-  ],
+  "private": true,
   "scripts": {
-    "build": "npm install && gulp"
+    "clean": "rimraf output && rimraf .pulp-cache",
+    "build": "pulp build",
+    "test": "pulp test"
   },
   "devDependencies": {
-    "gulp":             "^3.9.0",
-    "gulp-purescript":  "^0.7.0",
-    "gulp-run":         "^1.6.4",
-    "run-sequence":     "^1.1.2",
-    "gulp-jsvalidate":  "^2.0.0",
-    "purescript":       "^0.7.4",
-    "glob":             "^5.0.14"
+    "pulp": "^9.0.0",
+    "rimraf": "^2.5.0"
   }
 }
