@@ -558,12 +558,6 @@ data List a
   | Cons a (List a)
 ```
 
-A strict linked list.
-
-A list is either empty (represented by the `Nil` constructor) or non-empty, in
-which case it consists of a head element, and another list (represented by the
-`Cons` constructor).
-
 ##### Instances
 ``` purescript
 (Generic a) => Generic (List a)
@@ -585,6 +579,7 @@ Plus List
 Alternative List
 MonadZero List
 MonadPlus List
+Extend List
 ```
 
 #### `zipWithA`
@@ -997,7 +992,7 @@ Running time: `O(1)`.
 #### `groupBy`
 
 ``` purescript
-groupBy :: forall a. (a -> a -> Boolean) -> List a -> List (List a)
+groupBy :: forall a. (a -> a -> Boolean) -> List a -> List (NonEmptyList a)
 ```
 
 Group equal, consecutive elements of a list into lists, using the specified
@@ -1008,7 +1003,7 @@ Running time: `O(n)`
 #### `group'`
 
 ``` purescript
-group' :: forall a. Ord a => List a -> List (List a)
+group' :: forall a. Ord a => List a -> List (NonEmptyList a)
 ```
 
 Sort and then group the elements of a list into lists.
@@ -1020,7 +1015,7 @@ group' [1,1,2,2,1] == [[1,1,1],[2,2]]
 #### `group`
 
 ``` purescript
-group :: forall a. Eq a => List a -> List (List a)
+group :: forall a. Eq a => List a -> List (NonEmptyList a)
 ```
 
 Group equal, consecutive elements of a list into lists.
@@ -1221,13 +1216,8 @@ infix 5 difference as \\
 #### `(:)`
 
 ``` purescript
-infixr 6 Cons as :
+infixr 6 Data.List.Types.Cons as :
 ```
-
-An infix alias for `Cons`; attaches an element to the front of
-a list.
-
-Running time: `O(1)`
 
 #### `(..)`
 
@@ -1251,8 +1241,8 @@ An infix synonym for `index`.
 
 ``` purescript
 data Maybe a
-  = Just a
-  | Nothing
+  = Nothing
+  | Just a
 ```
 
 The `Maybe` type is used to represent optional values and can be seen as
@@ -1583,7 +1573,7 @@ Find the product of the numeric values in a data structure.
 #### `or`
 
 ``` purescript
-or :: forall a f. (Foldable f, BooleanAlgebra a) => f a -> a
+or :: forall a f. (Foldable f, HeytingAlgebra a) => f a -> a
 ```
 
 The disjunction of all the values in a data structure. When specialized
@@ -1786,7 +1776,7 @@ Test whether a value is an element of a data structure.
 #### `any`
 
 ``` purescript
-any :: forall a b f. (Foldable f, BooleanAlgebra b) => (a -> b) -> f a -> b
+any :: forall a b f. (Foldable f, HeytingAlgebra b) => (a -> b) -> f a -> b
 ```
 
 `any f` is the same as `or <<< map f`; map a function over the structure,
@@ -1795,7 +1785,7 @@ and then get the disjunction of the results.
 #### `and`
 
 ``` purescript
-and :: forall a f. (Foldable f, BooleanAlgebra a) => f a -> a
+and :: forall a f. (Foldable f, HeytingAlgebra a) => f a -> a
 ```
 
 The conjunction of all the values in a data structure. When specialized
@@ -1805,7 +1795,7 @@ structure are `true`.
 #### `all`
 
 ``` purescript
-all :: forall a b f. (Foldable f, BooleanAlgebra b) => (a -> b) -> f a -> b
+all :: forall a b f. (Foldable f, HeytingAlgebra b) => (a -> b) -> f a -> b
 ```
 
 `all f` is the same as `and <<< map f`; map a function over the structure,
@@ -2223,6 +2213,11 @@ The `Eq` type class represents types which support decidable equality.
 - Symmetry: `x == y = y == x`
 - Transitivity: if `x == y` and `y == z` then `x == z`
 
+**Note:** The `Number` type is not an entirely law abiding member of this
+class due to the presence of `NaN`, since `NaN /= NaN`. Additionally,
+computing with `Number` can result in a loss of precision, so sometimes
+values that should be equivalent are not.
+
 ##### Instances
 ``` purescript
 Eq Boolean
@@ -2271,7 +2266,7 @@ The `Field` class is for types that are commutative fields.
 Instances must satisfy the following law in addition to the
 `EuclideanRing` laws:
 
-- Non-zero multiplicative inverse: ``a `mod` b = 0` for all `a` and `b`
+- Non-zero multiplicative inverse: ``a `mod` b = 0` for all `a` and `b` ``
 
 ##### Instances
 ``` purescript
@@ -2492,7 +2487,12 @@ Instances must satisfy the following laws:
 - Multiplication distributes over addition:
   - Left distributivity: `a * (b + c) = (a * b) + (a * c)`
   - Right distributivity: `(a + b) * c = (a * c) + (b * c)`
-- Annihiliation: `zero * a = a * zero = zero`
+- Annihilation: `zero * a = a * zero = zero`
+
+**Note:** The `Number` and `Int` types are not fully law abiding
+members of this class hierarchy due to the potential for arithmetic
+overflows, and in the case of `Number`, the presence of `NaN` and
+`Infinity` values. The behaviour is unspecified in these cases.
 
 ##### Instances
 ``` purescript
@@ -2525,6 +2525,15 @@ Show String
 (Show a) => Show (Array a)
 ```
 
+#### `whenM`
+
+``` purescript
+whenM :: forall m. Monad m => m Boolean -> m Unit -> m Unit
+```
+
+Perform a monadic action when a condition is true, where the conditional
+value is also in a monadic context.
+
 #### `when`
 
 ``` purescript
@@ -2551,6 +2560,15 @@ main = forE 1 10 \n -> void do
   print n
   print (n * n)
 ```
+
+#### `unlessM`
+
+``` purescript
+unlessM :: forall m. Monad m => m Boolean -> m Unit -> m Unit
+```
+
+Perform a monadic action unless a condition is true, where the conditional
+value is also in a monadic context.
 
 #### `unless`
 
@@ -2689,6 +2707,31 @@ Flips the order of the arguments to a function of two arguments.
 flip const 1 2 = const 2 1 = 2
 ```
 
+#### `flap`
+
+``` purescript
+flap :: forall f a b. Functor f => f (a -> b) -> a -> f b
+```
+
+Apply a value in a computational context to a value in no context.
+
+Generalizes `flip`.
+
+```purescript
+longEnough :: String -> Bool
+hasSymbol :: String -> Bool
+hasDigit :: String -> Bool
+password :: String
+
+validate :: String -> List Bool
+validate = flap [longEnough, hasSymbol, hasDigit]
+```
+
+```purescript
+flap (-) 3 4 == 1
+threeve <$> Just 1 <@> 'a' <*> Just true == Just (threeve 1 'a' true)
+```
+
 #### `const`
 
 ``` purescript
@@ -2811,7 +2854,13 @@ infix 4 Data.Eq.eq as ==
 #### `(=<<)`
 
 ``` purescript
-infixl 1 Control.Bind.bindFlipped as =<<
+infixr 1 Control.Bind.bindFlipped as =<<
+```
+
+#### `(<@>)`
+
+``` purescript
+infixl 4 Data.Functor.flap as <@>
 ```
 
 #### `(<>)`
