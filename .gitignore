@@ -1,8 +1,0 @@
-!/.gitignore
-/output/
-/node_modules/
-/bower_components/
-/tmp/
-/node_modules/
-.psc-ide-port
-.psc-package/
